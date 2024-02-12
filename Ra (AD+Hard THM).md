@@ -42,7 +42,10 @@ WinRM allows the user to execute commands on the Windows server and it does requ
 After quite a long time, I was checking the website since It was looking like the only attack vector. Especially I was really curious about the reset password button. That had to be the way, but none of the users I've previously enumerated work, besides I had no idea about the security questions and I don't really wanted to bruteforce just yet. I got a clue from a friend who solved it already and he told me "Have you really looked at the entire website?". Normally in this kind of CTFs the main vulnerability is hidden like a riddle so I kept looking for possible usernames.
 
 It turns out I realized there was a picture of a girl with a pet on the bottom of the website and I know one of the security questions was the name of the pet so I tried to examine further that image and I notice I could save the image and when I tried to download it... bingo:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/819f89f9-172d-45a9-a6b6-b9e6ea7419a2)First of all I enumerated them using **kerbrute** and I found they were, in fact, AD users (actually I noticed I should've tried this before trying bruteforce with crackmapexec):![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/7282ab11-a0f3-489a-8241-cdf1f0ee4a10)I found out the usernames were following a different format and they had nothing to do with the previous ones. Now I know a valid username: **lilyle** and the name of her pet: **Sparky**. So I went straight forward to request a password change.![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/5d5930a0-bd39-4a64-937e-9a0b0f3800bb).
-Good, now I should have access to Lily's account. I tried using **evil-winrm** but it wasn't working, it wasn't going to be that easy. I also tried RDP and nothing.![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/10a252a7-e30c-461c-8922-b50c1b241e77)
+
+Good, now I should have access to Lily's account. I tried using **evil-winrm** but it wasn't working, it wasn't going to be that easy.![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/10a252a7-e30c-461c-8922-b50c1b241e77).
+
+I also tried RDP and nothing
 
 ## Authenticated enumeration:
 
