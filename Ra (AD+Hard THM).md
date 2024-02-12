@@ -87,7 +87,7 @@ This user does not seem very interesting at all. I found the following explanati
 The VM’s author meant for us to poke around and notice a folder C:\scripts with a checkservers.ps1 file inside. This PS1 pulls values from a text file stored in a user’s folder, does some stuff, and passes the result to Invoke-Expression.
 I have said before that I am not sure that anyone other than attackers and malware writers use Invoke-Expression. More accurately they tend to use an obscured version of its alias iex. In this case we are the attacker and we were meant to find this. I am probably preaching to the choir, but Invoke-Expression takes a string as input and runs it as a command."
 
-This bassically means we can manage most of the users within our domain. So in order to abuse this we can perform a Command injection in the scheduled task we found after performing enumeration looking at **.ps1** files and services executing this kind of files. 
+This bassically means that the user has acccess to WinRM in the DC so he should be a member of that Account Operators group, we can manage most of the users within our domain registered in this DC. So in order to abuse this we can perform a Command injection in the scheduled task we found after performing enumeration looking at **.ps1** files and services executing this kind of files. 
 
 **Note**: Something this explanation is missing, you can get the owner of a file using cmdlet: **Get-Childitem and Get-ACL** 
 ```powershell
