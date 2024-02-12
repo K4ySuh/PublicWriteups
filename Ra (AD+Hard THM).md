@@ -89,7 +89,7 @@ I have said before that I am not sure that anyone other than attackers and malwa
 
 This bassically means we can manage most of the users within our domain. So in order to abuse this we can perform a Command injection in the scheduled task we found after performing enumeration looking at **.ps1** files and services executing this kind of files. 
 
-**Note**: Something this explanation is missing, you can get the ownership of a file using cmdlet: **Get-Childitem and Get-ACL** 
+**Note**: Something this explanation is missing, you can get the owner of a file using cmdlet: **Get-Childitem and Get-ACL** 
 ```powershell
 Set-ADAccountPassword -Identity brittanycr -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "EasyP4Sword!!" -Force)
 ```
