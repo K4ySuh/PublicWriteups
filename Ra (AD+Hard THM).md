@@ -31,7 +31,29 @@ I've decided to have a closer look at how the requests were being sent to the re
 On the other hand, **port 7070** was only a website with a link pointing to what **HTTP Binding and BOSH technology were and how do they use XMPP protocol**:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/435f69b9-fd09-4a87-a239-2ecc4a9b9400)I was curious about this and I thought it could be a possible lead to find the vulnerability in this machine. However I wanted to solve this as a real scenario, I focused on further enumeration instead of tunnel-visioning the finding which, anyways, could be baiting me into a rabbit-hole.
 ## Port 5985: WinRM
 
-WinRM allows the user to execute commands on the Windows server and it does require authentication, some tools like **evil-winrm** allow to perform attacks like pash the hash to gain remote control with a shell. The other way to perform an attack against this service is to bruteforce using **crackmapexec** with the users I have previously found and also adding some built-in accounts like Administrator just in case. So I created a list of users with the e-mails gathered before and started the brute-force attack:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/607033fb-5dd8-476b-95bd-a50db768ff6f)**Note**: After reviewing this explanation I have noticed this is not the best way to proceed. You should always use **kerbrute** or any other tool to validate users before performing bruteforce!! 
+WinRM allows the user to execute commands on the Windows server and it does require authentication, some tools like **evil-winrm** allow to perform attacks like pash the hash to gain remote control with a shell. The other way to perform an attack against this service is to bruteforce using **crackmapexec** with the users I have previously found and also adding some built-in accounts like Administrator just in case. So I created a list of users with the e-mails gathered before and started the brute-force attack:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/607033fb-5dd8-476b-95bd-a50db768ff6f)**Note**: After reviewing this explanation I have noticed this is not the best way to proceed but I was doing this writeup as I was solving the machine. You should always use **kerbrute** or any other tool to validate users before performing bruteforce!! 
+
+# Gaining initial access.
+
+After quite a long time, I was checking the website since It was looking like the only attack vector. Especially I was really curious about the reset password button. That had to be the way, but none of the users I've previously enumerated work, besides I had no idea about the security questions and I don't really wanted to bruteforce just yet. I got a clue from a friend who solved it already and he told me "Have you really looked at the entire website?". Normally in this kind of CTFs the main vulnerability is hidden like a riddle so I kept looking for possible usernames.
+
+It turns out I realized there was a picture of a girl with a pet on the bottom of the website and I know one of the security questions was the name of the pet so I tried to examine further that image and I notice I could save the image and when I tried to download it... bingo:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/819f89f9-172d-45a9-a6b6-b9e6ea7419a2)First of all I enumerated them using **kerbrute** and I found they were, in fact, AD users (actually I noticed I should've tried this before trying bruteforce with crackmapexec):![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/7282ab11-a0f3-489a-8241-cdf1f0ee4a10)I found out the usernames were following a different format and they had nothing to do with the previous ones. Now I know a valid username: **lilyle** and the name of her pet: **Sparky**. So I went straight forward to request a password change.![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/5d5930a0-bd39-4a64-937e-9a0b0f3800bb)Good, now I should have access to Lily's account. I tried using **evil-winrm** but it wasn't working, it wasn't going to be that easy. I also tried RDP and nothing.![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/10a252a7-e30c-461c-8922-b50c1b241e77)
+
+## Authenticated enumeration:
+
+Now it was time to use crackmapexec/enum4linux with credentials to try to enumerate further. Once I ran **enum4linux** I saw there was an account called **silvergorilla409** which was one of the firsts acounts I found and he was **Backup Operator**, that could be interesting. 
+
+In addition I got some of the shares available within the domain:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/ee0df86c-5abe-466e-9e26-783a59a4ef54)The interesting ones here are **shared** and **users** so let's have a closer look into them using **smbclient** and trying to access as **Windcorp.thm\\lilyle**.![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/9de814d5-8a81-4ea8-838a-3dec7d2a49ec)Nice, I have got the first flag which is great and I also have found some versions of spark which I know from the previous enumeration phase is the application the enterprise is using for the technical support and I knew there was an user connected since there was a green dot on the website. So that is definitely a hint to take into consideration.
+I tried some enumeration of the **users*** share which only allowed me to have more accuracy on possible users:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/f3f13290-3fee-45d0-80ab-89e4714b605d)I was trying to find something related to **silvergorilla409** which was the backup operator but I wasn't lucky here. I also tried to get access to buse's directory since he was the only connected user in their website.
+
+# Lateral movement:
+
+Now it was time to download Spark and try to interact somehow with **Buse** in order to get more credentials so I could move within the domain. Just install Spark and use Lilyle credentials to authenticate. It's important to make some changes to the certificate validation of Spark in order to access:
+
+
+
+
+
 
 
 
