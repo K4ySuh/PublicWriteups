@@ -128,7 +128,7 @@ So I went to impacket and I tried using **impacket-secretdumps** and wait for it
 ![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/c9499c0e-e978-4964-9d6a-3a74a8cc977b)
 
 Sadly for me I think I broke WinRM at the end of the machine since I couldn't log in anymore using **evil-winrm** but anyway I got what I was looking for and I simply used **smbclient** to perform pash the hash and download the 3º flag from the Admin Desktop:
-![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/e61e3e2e-dbb8-40a2-9331-cd21705d65e4)
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/e07a9e67-d3b8-4dac-a56d-b7c8309be0c7)
 
 
 
