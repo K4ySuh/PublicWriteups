@@ -87,7 +87,7 @@ This user does not seem very interesting at all. I found the following explanati
 The VM’s author meant for us to poke around and notice a folder C:\scripts with a checkservers.ps1 file inside. This PS1 pulls values from a text file stored in a user’s folder, does some stuff, and passes the result to Invoke-Expression.
 I have said before that I am not sure that anyone other than attackers and malware writers use Invoke-Expression. More accurately they tend to use an obscured version of its alias iex. In this case we are the attacker and we were meant to find this. I am probably preaching to the choir, but Invoke-Expression takes a string as input and runs it as a command."
 
-This bassically means we can manage users with non-administrative privileges. So in order to abuse this we can perform a Command injection in the scheduled task we found after performing enumeration looking at **.ps1** files and services executing this kind of files. 
+This bassically means we can manage most of the users within our domain. So in order to abuse this we can perform a Command injection in the scheduled task we found after performing enumeration looking at **.ps1** files and services executing this kind of files. 
 
 **Note**: Something this explanation is missing, you can get the ownership of a file using cmdlet: **Get-Childitem and Get-ACL** 
 ```powershell
@@ -109,9 +109,26 @@ put hosts.txt
 ```
 
 You can have a look at log.txt to have a guess of how long are you going to wait (won't be much).
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/b4dba456-21ac-4d27-b5e7-dd92a4de4f5e)
+Once we get the Domain Admin we can try to retrieve the last flag:
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/b893dffc-c3da-490f-89d4-9566051dd12e)
 
+Now it is time to upload Invoke-Mimikatz.ps1 to our evil-winrm's powershell.
+```powershell
+# From evil-winrm:
+upload <FullPathToResource>/Invoke-Mimikatz.ps1
+. .\Invoke-Mimikatz.ps1
+# Now the module is loaded to your powershell.
+```
+I was trying to dump the SAM to get Administrator access to the local machine but unfortunately for me there was something interfeering (I also tried elevating token, ) and I researched a little bit and having Domain Admin permissons does not guarantee that you'll be able to extract all credentials locally with mimikatz:
 
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/281e5062-cfdc-4489-9a34-ce3a8f86f199)
 
+So I went to impacket and I tried using **impacket-secretdumps** and wait for it to retrieve the hashes.
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/c9499c0e-e978-4964-9d6a-3a74a8cc977b)
+
+Sadly for me I think I broke WinRM at the end of the machine since I couldn't log in anymore using **evil-winrm** but anyway I got what I was looking for and I simply used **smbclient** to perform pash the hash and download the 3º flag from the Admin Desktop:
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/e61e3e2e-dbb8-40a2-9331-cd21705d65e4)
 
 
 
