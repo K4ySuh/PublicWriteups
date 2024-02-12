@@ -89,7 +89,7 @@ I have said before that I am not sure that anyone other than attackers and malwa
 
 This bassically means that the user has acccess to WinRM in the DC so he should be a member of that Account Operators group, we can manage most of the users within our domain registered in this DC. So in order to abuse this we can perform a Command injection in the scheduled task we found after performing enumeration looking at **.ps1** files and services executing this kind of files. 
 
-**Note**: Something this explanation is missing, you can get the owner of a file using cmdlet: **Get-Childitem and Get-ACL** 
+**Note**: Performing enumeration in Windows looking for services or scripts being executed is similar to cronjobs in Linux, but in this case is **.ps1** instead of **.sh**
 ```powershell
 Set-ADAccountPassword -Identity brittanycr -Reset -NewPassword (ConvertTo-SecureString -AsPlainText "EasyP4Sword!!" -Force)
 ```
