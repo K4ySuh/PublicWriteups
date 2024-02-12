@@ -26,7 +26,8 @@ I've had a look over the few links and tools that are available on the website, 
 I found this interesting, maybe I could use some of the usernames I've found before with **whatweb** and try to get access somewhere (?). But there's also another finding, since it's using IIS technology the extension of the files running in the server are most likely gonna be **.asp** and after confirming checking the reset-password view I've performed a gobuster scan on the website:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/7996e44a-d9aa-4b35-bd0a-19daddfdcf09)Sadly I couldn't find anything ussefull at all.
 ### BurpSuite
 
-I've decided to have a closer look at how the requests were being sent to the reset password file:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/4de50a2b-b916-45a2-ab84-88e92d7f720c)
+I've decided to have a closer look at how the requests were being sent to the reset password file:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/4de50a2b-b916-45a2-ab84-88e92d7f720c).
+
 That form could potentially be vulnerable to pitchfork attacks using Burpsuite or maybe other kind of bruteforce attacks to reset the password assuming the usernames we listed before were valid.
 ## Port 7070, technical support IM technologies.
 On the other hand, **port 7070** was only a website with a link pointing to what **HTTP Binding and BOSH technology were and how do they use XMPP protocol**:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/435f69b9-fd09-4a87-a239-2ecc4a9b9400)
