@@ -59,7 +59,10 @@ I was trying to find something related to **silvergorilla409** which was the bac
 
 # Lateral movement:
 
-Now it was time to download Spark and try to interact somehow with **Buse** in order to get more credentials so I could move within the domain. Just install Spark and use Lilyle credentials to authenticate. It's important to make some changes to the certificate validation of Spark in order to access:![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/f5528af8-f2fa-45b4-aad3-6a29dbbb6b5b)![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/1eb73de7-2590-465b-b31d-42e32e2befeb)
+Now it was time to download Spark and try to interact somehow with **Buse** in order to get more credentials so I could move within the domain. Just install Spark and use Lilyle credentials to authenticate. It's important to make some changes to the certificate validation of Spark in order to access:
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/f5528af8-f2fa-45b4-aad3-6a29dbbb6b5b)
+![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/1eb73de7-2590-465b-b31d-42e32e2befeb)
+
 Once you have the user selected now it's time to find out a way to get his credentials. I knew the way here, was get the user to click a malicious link so I could get his credentials in some way. So I did some research and I found a tool called **responder** which is used for nbts-poisoning abusing LLMNR protocol which is still used for backward compatibility. If we execute Responder and we get a domain workstation to try to connect it will show the IP, the username and credential details **including NTLM hashes**.![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/55d6a659-590d-4b33-b824-a02209f63fec).
 
 Remember to set the interface as **tun0** since you're connected through the vpn and send a link for him to click. So now we have the NTLMv2 hash from this user, we could try to perform pash the hash through evil-winrm but we can also try to crack the hash while we perform other tasks. The way to do it with hashcat is as follows:
