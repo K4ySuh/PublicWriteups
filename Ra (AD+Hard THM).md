@@ -120,7 +120,7 @@ upload <FullPathToResource>/Invoke-Mimikatz.ps1
 . .\Invoke-Mimikatz.ps1
 # Now the module is loaded to your powershell.
 ```
-I was trying to dump the SAM to get Administrator access to the local machine but unfortunately for me there was something interfeering (I also tried elevating token, ) and I researched a little bit and having Domain Admin permissons does not guarantee that you'll be able to extract all credentials locally with mimikatz:
+I was trying to dump the SAM to get Administrator access to the local machine but unfortunately for me there was something interfeering (I also tried elevating token, ) and I researched a little bit and having Domain Admin permissons does not guarantee that you'll be able to extract all credentials locally with mimikatz not even using `lsadump::dcsync \user:Administrator \domain:Windcorp.thm`.
 
 ![image](https://github.com/K4ySuh/PublicWriteups/assets/147923141/281e5062-cfdc-4489-9a34-ce3a8f86f199)
 
